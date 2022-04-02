@@ -11,7 +11,7 @@ public class Librarian : MonoBehaviour
 	private const int MAX_CARRY_CAPACITY = 20; // The maximum number of book the bot can carry
 	private const float SEARCH_THRESHOLD = 0.25f; // Search threshold interval 0-1
 	private const float BOOK_DROP_DISTANCE = 1.75f; // The distance of the bot to put the book on the shelf
-	private const float BOOK_TAKE_DISTANCE = 1.2f; // The distance the bot can take the book
+	private const float BOOK_TAKE_DISTANCE = 2f; // The distance the bot can take the book
 	private const float STUN_TIME = 0.5f; // Stun duration after collision
 
 	public bool Stunned { get; private set; } = false;
@@ -46,6 +46,7 @@ public class Librarian : MonoBehaviour
 		#region High Priority States
 		var goToGrayBook = new GoToGrayBook(this, navMeshAgent, grayBookDetector, animator);
 		var hitSomething = new HitSomething(this, animator);
+		var endingMode = new EndingMode(this, navMeshAgent, animator);
 		#endregion
 
 		#region Default State Transiitons
@@ -59,8 +60,9 @@ public class Librarian : MonoBehaviour
 		#endregion
 
 		#region High Priority Transitions
-		_stateMachine.AddAnyTransition(goToGrayBook, GrayBookIsAvailable());
+		_stateMachine.AddAnyTransition(endingMode, Ending());
 		_stateMachine.AddAnyTransition(hitSomething, HitDetected());
+		_stateMachine.AddAnyTransition(goToGrayBook, GrayBookIsAvailable());
 		At(hitSomething, search, () => !Stunned);
 		At(goToGrayBook, returnToBookshelf, ReturnToBookshelf());
 		At(goToGrayBook, search, GrayBookIsNotInRange());
@@ -90,6 +92,7 @@ public class Librarian : MonoBehaviour
 															grayBookDetector.GrayBookInRange;
 
 		Func<bool> HitDetected() => () => hitDetection.HitSomething;
+		Func<bool> Ending() => () => GameManager.Instance.Ending;
 		#endregion
 	}
 
@@ -98,6 +101,7 @@ public class Librarian : MonoBehaviour
 		MyColor = ColorEnum.Red;
 		SetMyColor(StartDistributor.Instance.GiveMeColor());
 		_stackManager.StackCapacity = MAX_CARRY_CAPACITY;
+		PlayersData.Instance.SendYourData(gameObject, MyColor);
 	}
 
 	private void Update() => _stateMachine.Tick();

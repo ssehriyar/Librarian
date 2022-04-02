@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using MyUtils.Colors;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace LibraryGame
 {
@@ -31,14 +33,6 @@ namespace LibraryGame
 
 				default: return _emptyBookPosition += new Vector3(0.25f, 0, 0);
 			}
-		}
-
-		public void CheckStackForColorChange()
-		{
-			//foreach (var book in MyStackManager.MyBooks)
-			//{
-			//	book
-			//}
 		}
 	}
 }

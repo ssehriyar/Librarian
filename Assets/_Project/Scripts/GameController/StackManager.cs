@@ -16,7 +16,7 @@ namespace LibraryGame
 		{
 			book.IsPickable = false;
 			book.transform.SetParent(transform);
-			book.DisableCollide();
+			book.Collide(false);
 			//book.transform.DOLocalMove(new Vector3(0, 0.3f, 0) * MyBooks.Count, 0.3f);
 			book.GoTo(new Vector3(0, 0.3f, 0) * Books.Count, 0.5f);
 			book.transform.DOLocalRotate(Vector3.zero, 0.2f);
@@ -36,7 +36,7 @@ namespace LibraryGame
 			foreach (var book in Books)
 			{
 				book.transform.SetParent(null);
-				book.DisableCollide();
+				book.Collide(true);
 				book.AddRandomForce();
 				book.SetMyColor(ColorEnum.Gray);
 				StartCoroutine(book.MakePickableAfterATime());
@@ -59,7 +59,17 @@ namespace LibraryGame
 			if (Books.Count == 0)
 				IsStackEmpty = true;
 
+			PlayersData.Instance.AddToList(book);
 			bookshelf.MyStackManager.Books.Push(book);
+		}
+
+		public void EndingPush(Book book)
+		{
+			book.transform.SetParent(transform);
+			book.Collide(false);
+			book.transform.DOLocalMove(new Vector3(0, 0.3f, 0) * Books.Count, 0.5f);
+			book.transform.DOLocalRotate(Vector3.zero, 0.2f);
+			Books.Push(book);
 		}
 	}
 }

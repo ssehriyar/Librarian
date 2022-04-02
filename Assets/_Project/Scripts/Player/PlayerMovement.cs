@@ -10,10 +10,10 @@ namespace LibraryGame
 	{
 		private const float STUN_TIME = 1f; // Stun duration after collision
 		private static readonly int Speed = Animator.StringToHash("Speed");
-		private static readonly int VelocityX = Animator.StringToHash("VelocityX");
-		private static readonly int VelocityY = Animator.StringToHash("VelocityY");
+		private static readonly int Ending = Animator.StringToHash("Ending");
 
 		[SerializeField] private Rigidbody _rb;
+		[SerializeField] private Transform _groundCheck;
 		[SerializeField] private Animator _animator;
 		[SerializeField] private JoystickInputController _joystickInputController;
 		[SerializeField] private float _playerForceSpeed = 10f;
@@ -27,20 +27,36 @@ namespace LibraryGame
 		public void Move(Vector2 direction)
 		{
 			var input = Vector3.forward * direction.y + Vector3.right * direction.x;
-			_animator.SetFloat(VelocityX, direction.y, 0.1f, Time.deltaTime);
-			_animator.SetFloat(VelocityY, direction.x, 0.1f, Time.deltaTime);
+			_animator.SetFloat(Speed, input.magnitude);
+			if (OnGround())
+			{
+				/* Sliding feeling */
+				//_rb.AddForce((Vector3)(_playerForceSpeed * Time.fixedDeltaTime * input), ForceMode.VelocityChange);
+				
+				/* Sharp sense of movement */
+				_rb.velocity = _playerSharpSpeed * input;
+				//transform.position += _playerSharpSpeed * Time.deltaTime * input;
+			}
 
-			/* Sliding feeling */
-			//_rb.AddForce((Vector3)(_playerForceSpeed * Time.fixedDeltaTime * input), ForceMode.VelocityChange);
+			if (direction.x != 0 && direction.y != 0)
+			{
+				/* Sharp rotation */
+				transform.rotation = Quaternion.LookRotation(input);
 
-			/* Sharp sense of movement */
-			transform.position += _playerSharpSpeed * Time.deltaTime * input.normalized;
+				/* Smooth rotation */
+				//transform.DORotateQuaternion(Quaternion.LookRotation((Vector3)input), _rotationSpeedDuration);
+			}
+		}
 
-			/* Sharp rotation */
-			transform.rotation = Quaternion.LookRotation(input);
+		private bool OnGround()
+		{
+			return Physics.CheckSphere(_groundCheck.position, 0.05f);
+		}
 
-			/* Smooth rotation */
-			//transform.DORotateQuaternion(Quaternion.LookRotation((Vector3)input), _rotationSpeedDuration);
+		private void OnDrawGizmos()
+		{
+			Gizmos.color = Color.yellow;
+			Gizmos.DrawSphere(_groundCheck.position, 0.05f);
 		}
 
 		public IEnumerator DisableMoveForATime()
@@ -48,6 +64,20 @@ namespace LibraryGame
 			_joystickInputController.OnJoystickInputChange -= Move;
 			yield return new WaitForSeconds(STUN_TIME);
 			_joystickInputController.OnJoystickInputChange += Move;
+		}
+
+		public void EndingMode()
+		{
+			_joystickInputController.OnJoystickInputChange -= Move;
+			_joystickInputController.enabled = false;
+			_rb.isKinematic = true;
+			foreach (var collider in GetComponentsInChildren<Collider>())
+				collider.enabled = false;
+			foreach (var book in GetComponentsInChildren<Book>())
+				book.gameObject.SetActive(false);
+			GetComponent<Player>().MyStackManager.Clear();
+			_animator.SetTrigger(Ending);
+			transform.rotation = Quaternion.Euler(0, 180, 0);
 		}
 	}
 }

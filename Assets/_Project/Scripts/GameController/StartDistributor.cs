@@ -12,6 +12,11 @@ namespace LibraryGame
 		#region Player And AI
 		private List<ColorEnum> _colors = new List<ColorEnum>();
 
+		private void Awake()
+		{
+			_colors.Clear();
+		}
+
 		public ColorEnum GiveMeColor()
 		{
 			var color = (ColorEnum)UnityEngine.Random.Range(1, Enum.GetNames(typeof(ColorEnum)).Length);
@@ -22,5 +27,10 @@ namespace LibraryGame
 			return color;
 		}
 		#endregion
+
+		private void OnDestroy()
+		{
+			Destroy(this.gameObject);
+		}
 	}
 }

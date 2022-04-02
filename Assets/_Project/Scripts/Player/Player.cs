@@ -19,6 +19,7 @@ namespace LibraryGame
 		{
 			_stackManager.StackCapacity = MAX_CARRY_CAPACITY;
 			SetMyColor(StartDistributor.Instance.GiveMeColor());
+			PlayersData.Instance.SendYourData(gameObject, MyColor);
 		}
 
 		private void SetMyColor(ColorEnum color)

@@ -66,10 +66,18 @@ namespace LibraryGame
 			IsPickable = true;
 		}
 
-		public void DisableCollide()
+		public void Collide(bool b)
 		{
-			_rb.isKinematic = !_rb.isKinematic;
-			_boxCollider.enabled = !_boxCollider.enabled;
+			if (b)
+			{
+				_rb.isKinematic = false;
+				_boxCollider.enabled = true;
+			}
+			else
+			{
+				_rb.isKinematic = true;
+				_boxCollider.enabled = false;
+			}
 		}
 
 		public void GoTo(Vector3 targetPosition, float duration)
