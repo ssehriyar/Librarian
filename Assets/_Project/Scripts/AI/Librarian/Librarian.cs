@@ -12,10 +12,9 @@ public class Librarian : MonoBehaviour
 	private const float SEARCH_THRESHOLD = 0.25f; // Search threshold interval 0-1
 	private const float BOOK_DROP_DISTANCE = 1.75f; // The distance of the bot to put the book on the shelf
 	private const float BOOK_TAKE_DISTANCE = 2f; // The distance the bot can take the book
-	private const float STUN_TIME = 0.5f; // Stun duration after collision
+	private const float STUN_TIME = 1f; // Stun duration after collision
 
 	public bool Stunned { get; private set; } = false;
-	private bool _goingForSearch = false;
 	private StateMachine _stateMachine;
 
 	[SerializeField] private StackManager _stackManager;
@@ -47,6 +46,7 @@ public class Librarian : MonoBehaviour
 		var goToGrayBook = new GoToGrayBook(this, navMeshAgent, grayBookDetector, animator);
 		var hitSomething = new HitSomething(this, animator);
 		var endingMode = new EndingMode(this, navMeshAgent, animator);
+		var pickUpGrayBook = new PickUpGrayBook(this, animator);
 		#endregion
 
 		#region Default State Transiitons
@@ -62,11 +62,14 @@ public class Librarian : MonoBehaviour
 		#region High Priority Transitions
 		_stateMachine.AddAnyTransition(endingMode, Ending());
 		_stateMachine.AddAnyTransition(hitSomething, HitDetected());
+		_stateMachine.AddAnyTransition(pickUpGrayBook, ReachedGrayBook());
 		_stateMachine.AddAnyTransition(goToGrayBook, GrayBookIsAvailable());
 		At(hitSomething, search, () => !Stunned);
+		At(goToGrayBook, search, ShoulISearchRandomDecide());
+		At(goToGrayBook, pickUpGrayBook, ReachedGrayBook());
 		At(goToGrayBook, returnToBookshelf, ReturnToBookshelf());
-		At(goToGrayBook, search, GrayBookIsNotInRange());
-		At(goToGrayBook, pickUpBook, ReachedBook());
+		At(pickUpGrayBook, search, ShoulISearchRandomDecide());
+		At(pickUpGrayBook, returnToBookshelf, ReturnToBookshelf());
 		#endregion
 
 		_stateMachine.SetState(search);
@@ -76,21 +79,21 @@ public class Librarian : MonoBehaviour
 		#region Transition Conditions
 		Func<bool> HasTarget() => () => TargetBook != false;
 		Func<bool> StuckForOverASecond() => () => moveToSelected.TimeStuck > 1f;
-		Func<bool> ReachedBook() => () => TargetBook != null &&
-										Vector3.Distance(transform.position, TargetBook.transform.position)
-										< BOOK_TAKE_DISTANCE;
+		Func<bool> ReachedBook() => () => Vector3.Distance(transform.position, TargetBook.transform.position)
+																						< BOOK_TAKE_DISTANCE;
 
-		Func<bool> GrayBookIsNotInRange() => () => grayBookDetector.GrayBookInRange == false;
-		Func<bool> ShoulISearchRandomDecide() => () =>
-										(_goingForSearch = UnityEngine.Random.value > SEARCH_THRESHOLD) &&
-										!_stackManager.IsStackFull;
+		Func<bool> ReachedGrayBook() => () => TargetBook?.MyColor == ColorEnum.Gray &&
+			Vector3.Distance(transform.position, TargetBook.transform.position) < BOOK_TAKE_DISTANCE;
 
-		Func<bool> ReturnToBookshelf() => () => !_goingForSearch || _stackManager.IsStackFull && !_stackManager.IsStackEmpty;
-		Func<bool> ReachedBookshelf() => () =>
-				Vector3.Distance(transform.position, TargetBookshelf.transform.position) < BOOK_DROP_DISTANCE;
-		Func<bool> GrayBookIsAvailable() => () => TargetBook?.MyColor != ColorEnum.Gray &&
-															grayBookDetector.GrayBookInRange;
+		Func<bool> GrayBookIsNotInRange() => () => !_stackManager.IsStackFull && (UnityEngine.Random.value > SEARCH_THRESHOLD);
+		Func<bool> ShoulISearchRandomDecide() => () => !_stackManager.IsStackFull &&
+													(_stackManager.IsStackEmpty || (UnityEngine.Random.value > SEARCH_THRESHOLD));
 
+		Func<bool> ReturnToBookshelf() => () => _stackManager.IsStackFull || !_stackManager.IsStackEmpty;
+		Func<bool> ReachedBookshelf() => () => Vector3.Distance(transform.position, TargetBookshelf.transform.position)
+												< BOOK_DROP_DISTANCE;
+
+		Func<bool> GrayBookIsAvailable() => () => grayBookDetector.GrayBookInRange && !_stackManager.IsStackFull;
 		Func<bool> HitDetected() => () => hitDetection.HitSomething;
 		Func<bool> Ending() => () => GameManager.Instance.Ending;
 		#endregion

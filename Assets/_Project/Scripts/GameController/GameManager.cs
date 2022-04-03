@@ -51,11 +51,10 @@ namespace LibraryGame
 				countdownTime--;
 			}
 
-			StartCoroutine(GameEnding());
-			GameEnding();
+			StartCoroutine(PlaceCharacters());
 		}
 
-		private IEnumerator GameEnding()
+		private IEnumerator PlaceCharacters()
 		{
 			yield return new WaitForSeconds(1f);
 			Ending = true;
@@ -64,20 +63,20 @@ namespace LibraryGame
 			foreach (var go in Positions.Instance.Obstacles)
 				go.SetActive(false);
 
-			var list = PlayersData.Instance.LineUp();
-			for (int index = 0; index < list.Count; index++)
+			var allData = PlayersData.Instance.LineUp();
+			for (int index = 0; index < allData.Count; index++)
 			{
-				list[index].Item3.transform.DOMove(Positions.Instance.EndingPositions[index].position, 1f);
+				allData[index].Item3.transform.DOMove(Positions.Instance.EndingPositions[index].position, 1f);
 			}
 
-			StartCoroutine(WinnerPositions(list));
+			StartCoroutine(PlaceBooks(allData));
 		}
 
-		private IEnumerator WinnerPositions(List<Tuple<ColorEnum, List<Book>, GameObject>> list)
+		private IEnumerator PlaceBooks(List<Tuple<ColorEnum, List<Book>, GameObject>> allData)
 		{
 			yield return new WaitForSeconds(1f);
 			int count = 0;
-			foreach (var tuple in list)
+			foreach (var tuple in allData)
 			{
 				foreach (var book in tuple.Item2)
 				{
@@ -85,7 +84,7 @@ namespace LibraryGame
 					Positions.Instance.EndingPositions[count]
 						.GetComponentInChildren<StackManager>().EndingPush(book);
 				}
-				if (count == 3)
+				if (count == 3 && tuple.Item2.Count != 0)
 					tuple.Item3.GetComponent<EndAnimation>().YouWon();
 				else
 					tuple.Item3.GetComponent<EndAnimation>().YouLose();

@@ -10,20 +10,20 @@ namespace LibraryGame
 {
 	public class PlayersData : Singleton<PlayersData>
 	{
-		public List<Tuple<ColorEnum, List<Book>, GameObject>> Datas { get; set; }
+		public List<Tuple<ColorEnum, List<Book>, GameObject>> Data { get; set; }
 			= new List<Tuple<ColorEnum, List<Book>, GameObject>>();
 
 		//public Dictionary<GameObject, List<Book>> Datas { get; private set; }
 
 		public void SendYourData(GameObject go, ColorEnum myColor)
 		{
-			Datas.Add(new Tuple<ColorEnum, List<Book>, GameObject>(myColor, new List<Book>(), go));
+			Data.Add(new Tuple<ColorEnum, List<Book>, GameObject>(myColor, new List<Book>(), go));
 			//Datas.Add(go, new List<Book>());
 		}
 
 		public void AddToList(Book book)
 		{
-			foreach (var tuple in Datas)
+			foreach (var tuple in Data)
 			{
 				if (tuple.Item1 == book.MyColor)
 					tuple.Item2.Add(book);
@@ -32,7 +32,7 @@ namespace LibraryGame
 
 		public List<Tuple<ColorEnum, List<Book>, GameObject>> LineUp()
 		{
-			var newList = Datas.OrderBy(x => x.Item2.Count).ToList();
+			var newList = Data.OrderBy(x => x.Item2.Count).ToList();
 			return newList;
 		}
 

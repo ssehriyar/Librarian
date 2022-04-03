@@ -4,7 +4,7 @@ using MyUtils.Singleton;
 
 namespace MyUtils.TimeManager
 {
-    public class TimeManager : Singleton<TimeManager>
+    public class TimeManager : MonoBehaviour
     {
         public static Action OnTick;        // 200ms
         public static Action OnSecond;      // tick * 5
@@ -18,11 +18,11 @@ namespace MyUtils.TimeManager
 
         private void Awake()
         {
-			//OnTick = null;
-			//OnSecond = null;
-			//OnFiveSecond = null;
-			//OnTenSecond = null;
-			//On20Second = null;
+			OnTick = null;
+			OnSecond = null;
+			OnFiveSecond = null;
+			OnTenSecond = null;
+			On20Second = null;
 		}
 
         private void Update()

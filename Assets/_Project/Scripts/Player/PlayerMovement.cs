@@ -8,17 +8,17 @@ namespace LibraryGame
 {
 	public class PlayerMovement : MonoBehaviour
 	{
-		private const float STUN_TIME = 1f; // Stun duration after collision
+		private const float STUN_TIME = 2f; // Stun duration after collision
 		private static readonly int Speed = Animator.StringToHash("Speed");
 		private static readonly int Ending = Animator.StringToHash("Ending");
 
 		[SerializeField] private Rigidbody _rb;
-		[SerializeField] private Transform _groundCheck;
 		[SerializeField] private Animator _animator;
 		[SerializeField] private JoystickInputController _joystickInputController;
-		[SerializeField] private float _playerForceSpeed = 10f;
-		[SerializeField] private float _playerSharpSpeed = 5f;
-		[SerializeField] private float _rotationSpeedDuration = 0.5f;
+
+		//private float _playerForceSpeed = 10f;
+		private float _playerSharpSpeed = 5f;
+		//private float _rotationSpeedDuration = 0.5f;
 
 		private void OnEnable() => _joystickInputController.OnJoystickInputChange += Move;
 
@@ -28,15 +28,13 @@ namespace LibraryGame
 		{
 			var input = Vector3.forward * direction.y + Vector3.right * direction.x;
 			_animator.SetFloat(Speed, input.magnitude);
-			if (OnGround())
-			{
-				/* Sliding feeling */
-				//_rb.AddForce((Vector3)(_playerForceSpeed * Time.fixedDeltaTime * input), ForceMode.VelocityChange);
-				
-				/* Sharp sense of movement */
-				_rb.velocity = _playerSharpSpeed * input;
-				//transform.position += _playerSharpSpeed * Time.deltaTime * input;
-			}
+
+			/* Sliding feeling */
+			//_rb.AddForce((Vector3)(_playerForceSpeed * Time.fixedDeltaTime * input), ForceMode.VelocityChange);
+
+			/* Sharp sense of movement */
+			_rb.velocity = _playerSharpSpeed * input;
+			//transform.position += _playerSharpSpeed * Time.deltaTime * input;
 
 			if (direction.x != 0 && direction.y != 0)
 			{
@@ -46,17 +44,6 @@ namespace LibraryGame
 				/* Smooth rotation */
 				//transform.DORotateQuaternion(Quaternion.LookRotation((Vector3)input), _rotationSpeedDuration);
 			}
-		}
-
-		private bool OnGround()
-		{
-			return Physics.CheckSphere(_groundCheck.position, 0.05f);
-		}
-
-		private void OnDrawGizmos()
-		{
-			Gizmos.color = Color.yellow;
-			Gizmos.DrawSphere(_groundCheck.position, 0.05f);
 		}
 
 		public IEnumerator DisableMoveForATime()
