@@ -2504,11 +2504,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: FallingObstacle
       objectReference: {fileID: 0}
-    - target: {fileID: 3217826082861286886, guid: e3cb32d5e96d9af439c012308c254f94,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e3cb32d5e96d9af439c012308c254f94, type: 3}
 --- !u!1 &1126540436 stripped

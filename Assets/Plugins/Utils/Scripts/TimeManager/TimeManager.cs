@@ -7,6 +7,7 @@ namespace MyUtils.TimeManager
     public class TimeManager : MonoBehaviour
     {
         public static Action OnTick;        // 200ms
+        public static Action OnTwoSecond;   // tick * 10
         public static Action OnSecond;      // tick * 5
         public static Action OnFiveSecond;  // tick * 5 * 5
         public static Action OnTenSecond;   // tick * 10 * 5
@@ -19,6 +20,7 @@ namespace MyUtils.TimeManager
         private void Awake()
         {
 			OnTick = null;
+            OnTwoSecond = null;
 			OnSecond = null;
 			OnFiveSecond = null;
 			OnTenSecond = null;
@@ -41,6 +43,9 @@ namespace MyUtils.TimeManager
                 OnTick?.Invoke();
                 if (tick % 5 == 0)
                     OnSecond?.Invoke();
+
+                if (tick % 10 == 0)
+                    OnTwoSecond?.Invoke();
 
                 if (tick % 25 == 0)
                     OnFiveSecond?.Invoke();

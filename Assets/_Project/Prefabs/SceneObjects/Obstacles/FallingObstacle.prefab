@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2178841573722380151}
   - component: {fileID: 7733673274444957681}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: FallingMark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -217,7 +217,7 @@ GameObject:
   - component: {fileID: 4778677152851225177}
   - component: {fileID: 1409329132871390609}
   - component: {fileID: 7939092151868891373}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}

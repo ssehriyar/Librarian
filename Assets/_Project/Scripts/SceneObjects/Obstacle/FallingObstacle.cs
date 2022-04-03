@@ -13,7 +13,7 @@ namespace LibraryGame
 		private Vector3 _startPosition;
 		[SerializeField] private Transform _fallingMark;
 
-		private void Awake()
+		private void Start()
 		{
 			_startPosition = transform.position;
 			TimeManager.OnFiveSecond += FallAndReset;
