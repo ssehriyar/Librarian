@@ -19,7 +19,7 @@ https://user-images.githubusercontent.com/33117295/161444847-09971acf-1b86-428b-
 What I used to do the project;
 * Joystick controller<br/>
 * Stack<br/>
-* Finite-State-Machine<br/>
+* Finite-state machine<br/>
 * Avatar mask<br/>
 * Some other cool stuff ,)
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------

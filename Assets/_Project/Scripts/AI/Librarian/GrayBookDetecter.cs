@@ -15,12 +15,12 @@ public class GrayBookDetecter : MonoBehaviour
 
 	private void Start()
 	{
-		TimeManager.OnSecond += CheckForGrayBooks;
+		Timer.Instance.On1Second += CheckForGrayBooks;
 	}
 
-	private void OnDestroy()
+	private void OnDisable()
 	{
-		TimeManager.OnSecond -= CheckForGrayBooks;
+		Timer.Instance.On1Second -= CheckForGrayBooks;
 	}
 
 	//private void OnTriggerEnter(Collider other)

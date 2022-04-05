@@ -12,12 +12,12 @@ namespace LibraryGame
 		private void Start()
 		{
 			Jump();
-			TimeManager.OnTwoSecond += Jump;
+			Timer.Instance.On2Second += Jump;
 		}
 
 		private void OnDisable()
 		{
-			TimeManager.OnTwoSecond -= Jump;
+			Timer.Instance.On2Second -= Jump;
 		}
 
 		private void Jump()

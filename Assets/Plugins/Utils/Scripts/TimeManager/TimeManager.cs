@@ -4,63 +4,46 @@ using MyUtils.Singleton;
 
 namespace MyUtils.TimeManager
 {
-    public class TimeManager : MonoBehaviour
-    {
-        public static Action OnTick;        // 200ms
-        public static Action OnTwoSecond;   // tick * 10
-        public static Action OnSecond;      // tick * 5
-        public static Action OnFiveSecond;  // tick * 5 * 5
-        public static Action OnTenSecond;   // tick * 10 * 5
-        public static Action On20Second;
+	public class Timer : Singleton<Timer>
+	{
+		private const float TICK_TIMER_MAX = 0.2f;
 
-        private const float TICK_TIMER_MAX = 0.2f;  // 5 ticks per second, 200ms
-        private int tick;
-        private float tickTimer;
+		private int tick = 0;
+		private float tickTimer = 0;
 
-        private void Awake()
-        {
-			OnTick = null;
-            OnTwoSecond = null;
-			OnSecond = null;
-			OnFiveSecond = null;
-			OnTenSecond = null;
-			On20Second = null;
+		public event Action OnTick = delegate { };
+		public event Action On1Second = delegate { };
+		public event Action On2Second = delegate { };
+		public event Action On5Second = delegate { };
+
+		private void Update()
+		{
+			TimerInvoke();
 		}
 
-        private void Update()
-        {
-            TimeCalculator();
-        }
+		private void TimerInvoke()
+		{
+			tickTimer += Time.deltaTime;
+			if (tickTimer >= TICK_TIMER_MAX)
+			{
+				tickTimer = 0;
+				tick++;
 
-        private void TimeCalculator()
-        {
-            tickTimer += Time.deltaTime;
-            if (tickTimer >= TICK_TIMER_MAX)
-            {
-                tickTimer = 0;
-                tick++;
+				OnTick?.Invoke();
+				if (tick % 5 == 0)
+					On1Second?.Invoke();
 
-                OnTick?.Invoke();
-                if (tick % 5 == 0)
-                    OnSecond?.Invoke();
+				if (tick % 10 == 0)
+					On2Second?.Invoke();
 
-                if (tick % 10 == 0)
-                    OnTwoSecond?.Invoke();
+				if (tick % 25 == 0)
+					On5Second?.Invoke();
+			}
+		}
 
-                if (tick % 25 == 0)
-                    OnFiveSecond?.Invoke();
-
-                if (tick % 50 == 0)
-                    OnTenSecond?.Invoke();
-
-                if (tick % 100 == 0)
-                    On20Second?.Invoke();
-            }
-        }
-
-        private void OnDestroy()
-        {
-            Destroy(this.gameObject);
-        }
-    }
+		private void OnDestroy()
+		{
+			Destroy(this.gameObject);
+		}
+	}
 }

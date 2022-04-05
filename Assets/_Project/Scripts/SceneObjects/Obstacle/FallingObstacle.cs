@@ -16,12 +16,12 @@ namespace LibraryGame
 		private void Start()
 		{
 			_startPosition = transform.position;
-			TimeManager.OnFiveSecond += FallAndReset;
+			Timer.Instance.On5Second += FallAndReset;
 		}
 
 		private void OnDisable()
 		{
-			TimeManager.OnFiveSecond -= FallAndReset;
+			Timer.Instance.On5Second -= FallAndReset;
 		}
 
 		private void FallAndReset()
