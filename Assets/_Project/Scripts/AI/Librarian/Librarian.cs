@@ -85,7 +85,6 @@ public class Librarian : MonoBehaviour
 		Func<bool> ReachedGrayBook() => () => TargetBook?.MyColor == ColorEnum.Gray &&
 			Vector3.Distance(transform.position, TargetBook.transform.position) < BOOK_TAKE_DISTANCE;
 
-		Func<bool> GrayBookIsNotInRange() => () => !_stackManager.IsStackFull && (UnityEngine.Random.value > SEARCH_THRESHOLD);
 		Func<bool> ShoulISearchRandomDecide() => () => !_stackManager.IsStackFull &&
 													(_stackManager.IsStackEmpty || (UnityEngine.Random.value > SEARCH_THRESHOLD));
 
